@@ -1,6 +1,6 @@
 import pandas as pd
-from config import output_folder_path
-from lib.helpers import logger, get_emails_df, ask_openai
+from config import output_file_paths
+from lib.helpers import logger, get_emails_df, ask_openai, save_data, read_data
 from lib.email_templates import product_inquiry_tempate
 from lib.embedding_helper import search_embeded_product
 
@@ -44,10 +44,10 @@ def handle_product_inquiry():
     # get the product inquiry requests
     emails_df = get_emails_df()
     emails_df.set_index('email_id', inplace=True)
-    email_classification_df = pd.read_csv(f"{output_folder_path}/email-classification.csv")
+    email_classification_df = read_data(output_file_paths["email_classification"])
     product_inquiries = email_classification_df[email_classification_df["category"] == "product inquiry"]
     inquiry_responses = []
     for inquiry in product_inquiries.itertuples():
         response = inquiry_response(inquiry=inquiry, emails_df=emails_df)
         inquiry_responses.append(response)
-    pd.DataFrame(inquiry_responses).to_csv(f"{output_folder_path}/inquiry-response.csv", index=False)
+    save_data(pd.DataFrame(inquiry_responses), output_file_paths["inquiry_response"])

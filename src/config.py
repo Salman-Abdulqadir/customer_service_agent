@@ -19,15 +19,14 @@ openai_config = {
     "openai_model":  get_env_var("OPEN_AI_MODEL")
 }
 
-current_work_directory = os.getcwd()
-
-output_folder_path = os.path.join(current_work_directory, get_env_var("OUTPUT_FOLDER_PATH"))
-input_folder_path = os.path.join(current_work_directory, get_env_var("INPUT_FOLDER_PATH"))
-
 company_info = {
     "name": get_env_var("EMAIL_PROCESSING_CORP_NAME"),
     "contact": get_env_var("EMAIL_PROCESSING_CORP_CONTACT")
 }
+
+current_work_directory = os.getcwd()
+output_folder_path = f"{current_work_directory}/{get_env_var('OUTPUT_FOLDER_PATH') or '/output'}"
+input_folder_path = f"{current_work_directory}/{get_env_var('INPUT_FOLDER_PATH') or '/input'}"
 
 output_file_paths = {
     "email_classification": f"{output_folder_path}/email-classification.csv",
@@ -40,3 +39,5 @@ input_file_paths = {
     "emails": f"{input_folder_path}/emails.csv",
     "products": f"{input_folder_path}/products.csv",
 }
+
+logs_disabled = get_env_var("DISABLE_LOGS") == 'True'

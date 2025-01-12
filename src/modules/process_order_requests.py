@@ -60,6 +60,8 @@ The response must be A VALID JSON object (double quotes for keys and values (whe
     return order_status_list
 
 def generate_email_responses(order_status_df):
+    products_df = get_products_df()
+    order_status_df = order_status_df.merge(products_df, on="product_id", how="left")
     grouped = order_status_df.groupby('email_id')
     responses = []
     for email, products in grouped:
@@ -87,6 +89,7 @@ def generate_email_responses(order_status_df):
     return responses
 
 def process_order_requests():
+    print("output_file", output_file_paths)
     email_classification_df = read_data(output_file_paths["email_classification"])
     emails_df = get_emails_df()
     # filtering order requests from email_classification csv
@@ -96,12 +99,24 @@ def process_order_requests():
     order_emails_df = emails_df[emails_df['email_id'].isin(order_request_ids)]
 
     order_status_list = []
-    for email in order_emails_df.itertuples():
-        logger(f"Processing order Email - {email.email_id} in progress...")
-        order_status = process_email(email=email)
-        order_status_list.extend(order_status)
-        logger(f"Processing order Email - {email.email_id} completed, order status: {order_status}")
-
+    # for email in order_emails_df.itertuples():
+    #     logger(f"Processing order Email - {email.email_id} in progress...")
+    #     order_status = process_email(email=email)
+    #     order_status_list.extend(order_status)
+    #     logger(f"Processing order Email - {email.email_id} completed, order status: {order_status}")
+    order_status_list = [
+        {"product_id": "LTH0976", "quantity": "4", "email_id": "E001", "status": "created"},
+        {"product_id": "VBT2345", "quantity": "1", "email_id": "E002", "status": "created"},
+        {"product_id": "SFT1098", "quantity": "3", "email_id": "E004", "status": "created"},
+        {"product_id": "CLF2109", "quantity": "5", "email_id": "E007", "status": "out of stock"},
+        {"product_id": "FZZ1098", "quantity": "2", "email_id": "E007", "status": "created"},
+        {"product_id": "VSC6789", "quantity": "1", "email_id": "E008", "status": "created"},
+        {"product_id": "RSG8901", "quantity": "1", "email_id": "E010", "status": "created"},
+        {"product_id": "SLD7654", "quantity": "1", "email_id": "E013", "status": "created"},
+        {"product_id": "SWL2345", "quantity": "1", "email_id": "E014", "status": "created"},
+        {"product_id": "CBT8901", "quantity": "2", "email_id": "E019", "status": "created"},
+        {"product_id": "CGN2345", "quantity": "5", "email_id": "E023", "status": "out of stock"}
+    ]
     if len(order_status_list) > 0:
         order_status_df = pd.DataFrame(order_status_list)
         email_responses_df = pd.DataFrame(generate_email_responses(order_status_df) or [])

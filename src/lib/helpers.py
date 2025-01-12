@@ -1,7 +1,6 @@
 import pandas as pd
-import os
 from openai import OpenAI
-from config import *
+from config import openai_config, input_file_paths, logs_disabled
 from datetime import datetime
 import json
 
@@ -43,5 +42,7 @@ def parse_json(input, fallback = {}):
         return fallback
     
 def logger(message, type='INFO'):
+    if logs_disabled:
+        return
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{type}] {current_time} - {message}")

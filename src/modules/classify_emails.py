@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from lib.helpers import ask_openai, get_emails_df
-from config import output_file_path
+from config import output_folder_path
 
 def classify_email(email):
     try:
@@ -55,5 +55,5 @@ def classify_emails():
     emails_df["category"] = emails_df["email_id"].map(results_dict)
 
     # Saving output to a file
-    output_path = f"{output_file_path}/email-classification.csv"
+    output_path = f"{output_folder_path}/email-classification.csv"
     emails_df[["email_id", "category"]].to_csv(output_path, index=False)

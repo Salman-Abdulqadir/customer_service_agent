@@ -1,6 +1,6 @@
 import pandas as pd
-from config import output_file_path
-from lib.helpers import get_emails_df, logger, ask_openai, parse_json, get_products_df, save_data
+from config import input_file_paths, output_file_paths
+from lib.helpers import get_emails_df, logger, ask_openai, parse_json, get_products_df, save_data, read_data
 from lib.embedding_helper import search_embeded_product
 from lib.email_templates import fully_processed_order_email, partially_processed_order_email
 
@@ -52,7 +52,7 @@ The response must be A VALID JSON object (double quotes for keys and values (whe
         if order_status["status"] == 'created':
             products_df.loc[products_df['product_id'] == target_product['product_id'], 'stock'] = target_product['stock'] - order_status["quantity"]
             logger("Saving Products CSV...")
-            save_data(products_df, 'products.csv')
+            save_data(products_df, input_file_paths["products"])
 
         order_status_list.append(order_status)
 
@@ -75,7 +75,6 @@ def generate_email_responses(order_status_df):
 
             # Filter the DataFrame for the 'out of stock' status
             out_of_stock_products = products[products['status'] == 'out of stock'].to_dict(orient='records')
-
             email_response = partially_processed_order_email(
                 instock_products=instock_products or [], 
                 out_of_stock_product=out_of_stock_products or []
@@ -88,7 +87,7 @@ def generate_email_responses(order_status_df):
     return responses
 
 def process_order_requests():
-    email_classification_df = pd.read_csv(f"{output_file_path}/email-classification.csv")
+    email_classification_df = read_data(output_file_paths["email_classification"])
     emails_df = get_emails_df()
     # filtering order requests from email_classification csv
     order_request_ids = email_classification_df[email_classification_df['category'] == 'order request']["email_id"]
@@ -108,5 +107,5 @@ def process_order_requests():
         email_responses_df = pd.DataFrame(generate_email_responses(order_status_df) or [])
 
         # # saving order status and order responses
-        order_status_df.to_csv(f"{output_file_path}/order-status.csv", index=False)
-        email_responses_df.to_csv(f"{output_file_path}/order-response.csv", index=False)
+        save_data(order_status_df, output_file_paths["order_status"])
+        save_data(email_responses_df, output_file_paths["order_response"])

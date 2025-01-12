@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from openai import OpenAI
-from config import openai_config
+from config import *
 from datetime import datetime
 import json
 
@@ -23,18 +23,16 @@ def ask_openai(messages, log_message = ""):
         logger(f"Something went wrong while Asking openAI error: {e}", "ERROR")
 
 def read_data(filename):
-    path = os.path.join(os.getcwd(), "data")
-    return pd.read_csv(f"{path}/{filename}")
-
-def get_products_df():
-    return read_data("products.csv")
+    return pd.read_csv(filename)
 
 def save_data(df, filename):
-    path = os.path.join(os.getcwd(), "data")
-    return df.to_csv(f"{path}/{filename}", index=False)
+    return df.to_csv(filename, index=False)
+
+def get_products_df():
+    return read_data(input_file_paths["products"])
 
 def get_emails_df():
-    return read_data("emails.csv")
+    return read_data(input_file_paths["emails"])
 
 def parse_json(input, fallback = {}):
     try:

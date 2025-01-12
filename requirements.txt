@@ -1,0 +1,6 @@
+openai 
+httpx==0.27.2
+pandas
+numpy
+sentence-transformers
+faiss-cpu

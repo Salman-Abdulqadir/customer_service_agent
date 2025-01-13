@@ -2,6 +2,6 @@ from modules.classify_emails import classify_emails
 from modules.process_order_requests import process_order_requests
 from modules.handle_product_inquiry import handle_product_inquiry
 
-# classify_emails()
+classify_emails()
 process_order_requests()
-# handle_product_inquiry()
+handle_product_inquiry()
